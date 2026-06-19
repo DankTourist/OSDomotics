@@ -7,8 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 // ------------- Error codes ----------------
@@ -23,8 +25,10 @@
 
 // Command and State Errors
 #define ERR_INVALID_COMMAND 201
-#define ERR_MANUAL_OVERRIDE 202 // Used when Hub detects inconsistent child states
-#define ERR_UNSUPPORTED_SWITCH 203 // e.g., trying to change fridge 'perc' via Controller
+#define ERR_MANUAL_OVERRIDE                                                    \
+  202 // Used when Hub detects inconsistent child states
+#define ERR_UNSUPPORTED_SWITCH                                                 \
+  203 // e.g., trying to change fridge 'perc' via Controller
 
 // System Errors
 #define ERR_PROCESS_CRASHED 301
@@ -37,11 +41,25 @@
 #define FIFO_PATH_PREFIX "/tmp/domotics_dev_"
 #define CONTROLLER_FIFO "/tmp/domotics_controller.fifo"
 
+// --------------- STRUTTURE DATI ----------------
+
 // IPC Message Structure
 typedef struct {
   int sender_id;
   int target_id;
   char command[MAX_CMD_LEN];
 } IPC_Message;
+
+#define MAX_DEVICES 100
+
+// Routing Table to keep track of devices
+typedef struct {
+  int logical_id;
+  pid_t pid;
+  char type[32];
+  int is_active;
+} Device;
+
+//-----------------------------------------------
 
 #endif
