@@ -142,12 +142,12 @@ int main()
             }
             else if (strcmp(input, "list") == 0)
             {
-                printf("--- DISPOSITIVI ATTIVI ---\n");
+                printf("--- ACTIVE DEVICES ---\n");
                 for (int i = 0; i < MAX_DEVICES; i++)
                 {
                     if (routing_table[i].is_active)
                     {
-                        printf("ID: %d | Tipo: %s | PID: %d\n", routing_table[i].logical_id, routing_table[i].type, routing_table[i].pid);
+                        printf("ID: %d | Type: %s | PID: %d\n", routing_table[i].logical_id, routing_table[i].type, routing_table[i].pid);
                     }
                 }
             }
@@ -159,24 +159,24 @@ int main()
                     pid_t pid = fork();
 
                     if (pid < 0) {
-                        perror("Errore nella fork");
+                        perror("Error in fork");
                     } else if (pid == 0) {
                         // --- FATHER PROCESS (New Device) ---
                         char id_str[16];
                         sprintf(id_str, "%d", new_id);
                         
-                        // Prepariamo il percorso dell'eseguibile (es. "./bulb")
+                        // setup the executable path (e.g., "./bulb")
                         char exec_path[64];
                         snprintf(exec_path, sizeof(exec_path), "./%s", device_type);
 
                         execl(exec_path, device_type, id_str, NULL);
                         
-                        // Se arriviamo qui, execl ha fallito
-                        printf("Errore: impossibile lanciare '%s'\n", device_type);
+                        // If we arrive here, execl has failed
+                        printf("Error: unable to launch '%s'\n", device_type);
                         exit(ERR_FORK_FAILED); 
                     } else {
-                        // --- FATHER PROCESS (Controller) ---
-                        // Aggiungiamo alla tabella di routing
+                        // --- FATHER PROCESS (controller) ---
+                        // adding to routing table
                         for (int i = 0; i < MAX_DEVICES; i++) {
                             if (!routing_table[i].is_active) {
                                 routing_table[i].logical_id = new_id;
@@ -260,7 +260,7 @@ int main()
             printf("domotics> ");
             fflush(stdout);
         }
-        // 2. È ARRIVATO UN MESSAGGIO IPC DA UN FIGLIO (FIFO)?
+        //  INCOMING MESSAGE IPC FROM A CHILD (FIFO)?
         if (FD_ISSET(controller_fifo_fd, &read_fds))
         {
             IPC_Message msg;
