@@ -241,6 +241,20 @@ int main()
                     printf("[Controller] Linking device %d to parent device %d\n", id1,
                            id2);
                     // TODO: update routing table and notify via IPC
+                    int index1 = find_device_index(id1),
+                        index2 = find_device_index(id2);
+                    check_link(index1, index2);
+                    // ... [check indexes]
+                    routing_table[index1].logical_id = routing_table[index2].logical_id;
+
+                    char *cmd_par; sprintf(cmd_par, "link %d", id1);
+                    char *cmd_child; sprintf(cmd_child, "link %d", id2);
+
+                    if ((errno = send_ipc_message(id1, my_id, cmd_child)) != SUCCESS) {
+                        perror("send_ipc_message() (link child)");
+                    } else if ((errno = send_ipc_message(id2, my_id, cmd_par)) != SUCCESS) {
+                        perror("send_ipc_message() (link parent)");
+                    }
                 }
                 else
                 {
