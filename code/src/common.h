@@ -37,6 +37,7 @@
 
 //-----------------------------------------
 
+#define MAX_TOKENS 16
 #define MAX_CMD_LEN 256
 #define FIFO_PATH_PREFIX "/tmp/domotics_dev_"
 #define CONTROLLER_FIFO "/tmp/domotics_controller.fifo"
@@ -61,5 +62,6 @@ typedef struct {
 } Device;
 
 //-----------------------------------------------
+char **tokenise(char*);
 
 #endif
